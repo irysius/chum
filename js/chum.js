@@ -5,7 +5,7 @@
     var selObject = 'data-chum-obj';
     var selProp = 'data-chum-prop';
     var selType = 'data-chum-type';
-    var showDebug = false;
+    var showDebug = true;
     var dictionary = {};
     var customAccessors = {};
 
@@ -85,13 +85,48 @@
         }
         return accessor;
     }
+    function getRadio($elem) {
+        var name = $elem.attr('name');
+        return $('input[type="radio"][name="' + name + '"]:checked').val();
+    }
+    function setRadio($elem, val) {
+        var name = $elem.attr('name');
+        var radioes = $('input[type="radio"][name="' + name + '"]');
+        _.each(radioes, function (radio) {
+            var $radio = $(radio);
+            if ($radio.val() == val) {
+                $radio[0].checked = true;
+            } else {
+                $radio[0].checked = false;
+            }
+        })
+    }
+    function RadioAccessor($elem, change) {
+        var accessor = {
+            get: function () {
+                return getRadio($elem);
+            },
+            set: function (val) {
+                var before, after;
+                if (_.isFunction(change)) { before = accessor.get(); }
+
+                setRadio($elem, val);
+
+                if (_.isFunction(change)) {
+                    after = accessor.get();
+                    change(before, after);
+                }
+            }
+        }
+        return accessor;
+    }
 
     function createObject($unit) {
         var name = $unit.attr(selObject);
         var unit = {};
         var events = {};
         var props = $unit.find('[' + selProp + ']');
-        showDebug && console.log(props);
+        showDebug && console.log('properties found:', props.length);
         var propNames = [];
 
         _.each(props, function (prop) {
@@ -105,7 +140,7 @@
                 if (!!customAccessors[type]) {
                     showDebug && console.log('createObject - custom, found');
                     accessors = customAccessors[type]($prop, function (before, after) {
-                        if (events['change'].length > 0) {
+                        if (!!events['change'] && events['change'].length > 0) {
                             _.each(events['change'], function (callback) {
                                 callback(unit, propName, before, after);
                             })
@@ -117,7 +152,7 @@
             if (!accessors && $prop.is('[type="checkbox"]')) {
                 showDebug && console.log('createObject - checkbox');
                 accessors = new CheckboxAccessor($prop, function (before, after) {
-                    if (events['change'].length > 0) {
+                    if (!!events['change'] && events['change'].length > 0) {
                         _.each(events['change'], function (callback) {
                             callback(unit, propName, before, after);
                         })
@@ -128,7 +163,18 @@
             if (!accessors && $prop.is('[type="number"]')) {
                 showDebug && console.log('createObject - number');
                 accessors = new NumberAccessor($prop, function (before, after) {
-                    if (events['change'].length > 0) {
+                    if (!!events['change'] && events['change'].length > 0) {
+                        _.each(events['change'], function (callback) {
+                            callback(unit, propName, before, after);
+                        })
+                    }
+                });
+            }
+
+            if (!accessors && $prop.is('[type="radio"]')) {
+                showDebug && console.log('createObject - radio');
+                accessors = new RadioAccessor($prop, function (before, after) {
+                    if (!!events['change'] && events['change'].length > 0) {
                         _.each(events['change'], function (callback) {
                             callback(unit, propName, before, after);
                         })
@@ -139,7 +185,7 @@
             if (!accessors) {
                 showDebug && console.log('createObject - default');
                 accessors = new BasicAccessor($prop, function (before, after) {
-                    if (events['change'].length > 0) {
+                    if (!!events['change'] && events['change'].length > 0) {
                         _.each(events['change'], function (callback) {
                             console.log(callback);
                             callback(unit, propName, before, after);
@@ -182,7 +228,6 @@
 
     function registerAccessor(typeName, accessor) {
         customAccessors[typeName] = accessor;
-        rescan();
     }
 
     function rescan() {
