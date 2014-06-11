@@ -34,7 +34,12 @@ Causes Chum to rescan the DOM for parsable objects.
 
 Registers a custom binding object to Chum for non-standard input types.
 
-The binding function returns an object with the signature: `{ get: function () { return any; }, set: function (val: any) { } }`
+The binding function returns an object with the signature: 
+
+	{ 
+		get: () => any, 
+		set: (val: any) => void 
+	}
 
 The binding function takes the following parameters: `($elem: jQueryObject, change: function)`
 
