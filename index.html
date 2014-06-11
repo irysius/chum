@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <script src="/js/lib/jquery-2.1.0.min.js"></script>
+        <script src="/js/lib/lodash.js"></script>
+        <script src="/js/chum.js"></script>
+        <!--<script src="/js/lib/require.js" data-main="/js/main"></script>-->
+    </head>
+    <body>
+        <div data-chum-obj="test">
+            <div>
+                <label>Text:</label>
+                <input type="text" name="text" data-chum-prop="name"/>
+            </div>
+            <div>
+                <label>Number:</label>
+                <input type="number" name="number" data-chum-prop="number"/>
+            </div>
+            <div>
+                <label>Select:</label>
+                <select name="select" data-chum-prop="color">
+                    <option value="">Default</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                    <option value="orange">Orange</option>
+                </select>
+            </div>
+            <div>
+                <label>Checkbox:</label>
+                <input type="checkbox" name="checkbox" data-chum-prop="yesno"/>
+            </div>
+            <div data-chum-prop="multiple" data-chum-type="multiple">
+                <label>Multiple Checkboxes:</label>
+                <input type="checkbox" name="checkbox1" value="a" />
+                <input type="checkbox" name="checkbox2" value="b" />
+                <input type="checkbox" name="checkbox3" value="c" />
+                <input type="checkbox" name="checkbox4" value="d" />
+                <input type="checkbox" name="checkbox5" value="e" />
+            </div>
+            <div>
+                <label>Text Area:</label>
+                <textarea name="stuff" data-chum-prop="textarea"></textarea>
+            </div>
+        </div>
+        <script>
+            chum.registerType('multiple', function ($elem, change) {
+                return {
+                    get: function () {
+                        var checkboxes = $elem.find('[type="checkbox"]:checked');
+                        var raw = _.map(checkboxes, function (checkbox) {
+                            return $(checkbox).val();
+                        })
+                        return raw.join(',');
+                    },
+                    set: function (val) {
+                        var before, after;
+                        if (_.isFunction(change)) { before = this.get(); }
+
+                        var raw = val.split(',');
+                        var checkboxes = $elem.find('[type="checkbox"]');
+                        _.each(checkboxes, function (checkbox) {
+                            var $checkbox = $(checkbox);
+                            if (raw.indexOf($checkbox.val()) != -1) {
+                                $checkbox[0].checked = true;
+                            } else {
+                                $checkbox[0].checked = false;
+                            }
+                        })
+
+                        if (_.isFunction(change)) {
+                            after = this.get();
+                            change(before, after);
+                        }
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
