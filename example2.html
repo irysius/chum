@@ -50,8 +50,7 @@
                         return raw.join(',');
                     },
                     set: function (val) {
-                        var before, after;
-                        if (_.isFunction(change)) { before = accessor.get(); }
+                        var before = accessor.get();
 
                         var raw = val.split(',');
                         var checkboxes = $elem.find('[type="checkbox"]');
@@ -64,10 +63,8 @@
                             }
                         })
 
-                        if (_.isFunction(change)) {
-                            after = accessor.get();
-                            change(before, after);
-                        }
+                        var after = accessor.get();
+                        change(before, after);
                     }
                 }
                 return accessor;
@@ -87,8 +84,7 @@
                         return result;
                     },
                     set: function (val) {
-                        var before, after;
-                        if (_.isFunction(change)) { before = accessor.get(); }
+                        var before = accessor.get();
 
                         // only sets firstname and lastname if value has those.
                         if (val.firstname) {
@@ -98,10 +94,8 @@
                             $lastname.val(val.lastname);
                         }
 
-                        if (_.isFunction(change)) {
-                            after = accessor.get();
-                            change(before, after);
-                        }
+                        var after = accessor.get();
+                        change(before, after);
                     }
                 }
                 return accessor;
