@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Chum Tests - Duplicate Names</title>
+        <script src="/js/lib/jquery-2.1.0.min.js"></script>
+        <script src="/js/lib/lodash.js"></script>
+        <script src="/js/chum.js"></script>
+    </head>
+    <body>
+        <!-- Control -->
+        <div data-chum-obj="control">
+            <input type="text" data-chum-prop="text" value="control"/>
+        </div>
+
+        <!-- Duplicate object name -->
+        <div data-chum-obj="item">
+            <input type="text" data-chum-prop="text" value="001"/>
+        </div>
+        <div data-chum-obj="item">
+            <input type="checkbox" data-chum-prop="boolean" checked/>
+        </div>
+        <div data-chum-obj="item">
+            <input type="text" data-chum-prop="text" value="002"/>
+        </div>
+
+        <!-- Duplicate property name -->
+        <div data-chum-obj="doodadA" style="margin-bottom: 10px;">
+            <input type="text" data-chum-prop="text" value="003"/>
+            <input type="text" data-chum-prop="text" value="004"/>
+            <input type="text" data-chum-prop="text" value="005"/>
+        </div>
+        <div data-chum-obj="doodadB" style="margin-bottom: 10px;">
+            <input type="text" data-chum-prop="text" value="006"/>
+            <select data-chum-prop="text">
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+            </select>
+            <input type="text" data-chum-prop="text" value="007"/>
+        </div>
+        <div data-chum-obj="doodadC">
+            <input type="text" data-chum-prop="text" value="008"/>
+            <select data-chum-prop="text">
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+            </select>
+            <input type="checkbox" data-chum-prop="boolean" />
+            <input type="text" data-chum-prop="boolean" value="009"/>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Chum Tests - Malformed Tags</title>
+        <script src="/js/lib/jquery-2.1.0.min.js"></script>
+        <script src="/js/lib/lodash.js"></script>
+        <script src="/js/chum.js"></script>
+    </head>
+    <body>
+        <!-- Control -->
+        <div data-chum-obj="control">
+            <input type="text" data-chum-prop="text" value="control"/>
+        </div>
+
+        <!-- Missing object name -->
+        <div data-chum-obj>
+            <input type="text" data-chum-prop="text" value="001"/>
+        </div>
+        <div data-chum-obj="">
+            <input type="text" data-chum-prop="text" value="002"/>
+        </div>
+
+        <!-- Not enclosed by data-chum-obj -->
+        <input type="text" data-chum-prop="text" value="003"/>
+
+        <!-- Missing property name -->
+        <div data-chum-obj="testA">
+            <input type="text" data-chum-prop value="004"/>
+        </div>
+        <div data-chum-obj="testB">
+            <input type="text" data-chum-prop="" value="005"/>
+        </div>
+
+        <!-- Marking multiple radios to the same name -->
+        <div data-chum-obj="doodadA" style="margin-bottom: 10px;">
+            <input type="radio" name="shapesA" value="circle" data-chum-prop="shapes" />Circle<br />
+            <input type="radio" name="shapesA" value="rectangle" data-chum-prop="shapes" />Rectangle<br />
+            <input type="radio" name="shapesA" value="triangle" data-chum-prop="shapes" checked/>Triangle<br />
+            <input type="radio" name="shapesA" value="square" data-chum-prop="shapes" />Square<br />
+        </div>
+        <div data-chum-obj="doodadB" style="margin-bottom: 10px;">
+            <input type="radio" name="shapesB" value="circle" data-chum-prop="shapes" />Circle<br />
+            <input type="radio" name="shapesB" value="rectangle" data-chum-prop="sepahs" checked/>Rectangle<br />
+            <input type="radio" name="shapesB" value="triangle" data-chum-prop="aphsse" />Triangle<br />
+            <input type="radio" name="shapesB" value="square" data-chum-prop="hapess" />Square<br />
+        </div>
+        <div data-chum-obj="doodadC">
+            <input type="radio" name="shapesC" value="circle" data-chum-prop="shapes" />Circle<br />
+            <input type="radio" name="shapesC" value="rectangle" />Rectangle<br />
+            <input type="radio" name="shapesC" value="triangle" data-chum-prop="" />Triangle<br />
+            <input type="radio" name="shapesC" value="square" checked/>Square<br />
+        </div>
+    </body>
+</html>

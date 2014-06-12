@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Chum Tests - Nesting</title>
+        <script src="/js/lib/jquery-2.1.0.min.js"></script>
+        <script src="/js/lib/lodash.js"></script>
+        <script src="/js/chum.js"></script>
+    </head>
+    <body>
+        <!-- Control -->
+        <div data-chum-obj="control">
+            <input type="text" data-chum-prop="text" value="control"/>
+        </div>
+
+        <!-- Basic nesting -->
+        <div data-chum-obj="basic">
+            <input type="text" data-chum-prop="text" value="basic001" />
+            <div data-chum-obj="inner">
+                <input type="text" data-chum-prop="text" value="basic002" />
+            </div>
+        </div>
+
+        <!-- 6 levels nesting -->
+        <div data-chum-obj="deep">
+            <input type="text" data-chum-prop="text" value="deep000" />
+            <div data-chum-obj="levelOne">
+                <input type="text" data-chum-prop="text" value="deep001" />
+                <div data-chum-obj="levelTwo">
+                    <input type="text" data-chum-prop="text" value="deep002" />
+                    <div data-chum-obj="levelThree">
+                        <input type="text" data-chum-prop="text" value="deep003" />
+                        <div data-chum-obj="levelFour">
+                            <input type="text" data-chum-prop="text" value="deep004" />
+                            <div data-chum-obj="levelFive">
+                                <input type="text" data-chum-prop="text" value="deep005" />
+                                <div data-chum-obj="levelSix">
+                                    <input type="text" data-chum-prop="text" value="deep006" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multiple children -->
+        <div data-chum-obj="parent">
+            <input type="text" data-chum-prop="text" value="parent001" />
+            <div data-chum-obj="childOne">
+                <input type="text" data-chum-prop="text" value="child001" />
+            </div>
+            <div data-chum-obj="childTwo">
+                <input type="text" data-chum-prop="text" value="child002" />
+            </div>
+            <div data-chum-obj="childThree">
+                <input type="text" data-chum-prop="text" value="child003" />
+            </div>
+        </div>
+    </body>
+</html>
