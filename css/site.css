@@ -1,0 +1,12 @@
+h1 {
+    font-size: 18px;
+}
+
+h2 {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.input-group {
+    padding-bottom: 10px;
+}

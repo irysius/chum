@@ -7,20 +7,42 @@
         <script src="/js/lib/jquery-2.1.0.min.js"></script>
         <script src="/js/lib/lodash.js"></script>
         <script src="/js/chum.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/site.css" />
     </head>
     <body>
-        <div data-chum-prop="multiple" data-chum-type="multiple">
-            <label>Multiple Checkboxes:</label>
-            <input type="checkbox" name="checkbox1" value="a" />A<br />
-            <input type="checkbox" name="checkbox2" value="b" />B<br />
-            <input type="checkbox" name="checkbox3" value="c" />C<br />
-            <input type="checkbox" name="checkbox4" value="d" />D<br />
-            <input type="checkbox" name="checkbox5" value="e" />E<br />
+        <div>Inspect the html for more details.</div>
+        <p>You can press F12 and manipulate the object Chum parsed.</p>
+        <p>You can access the object via: chum.items.advanced</p>
+        <p>The following scenarioes demonstrate custom getting and setting.</p>
+        <h1>chum.items.advanced</h1>
+        <div data-chum-obj="advanced">
+            <div class="input-group">
+                <h2>advanced.multiple</h2>
+                <div data-chum-prop="multiple" data-chum-type="multiple">
+                    <label>Select Multiple Checkboxes:</label><br />
+                    <input type="checkbox" name="checkbox1" value="a" />A<br />
+                    <input type="checkbox" name="checkbox2" value="b" />B<br />
+                    <input type="checkbox" name="checkbox3" value="c" />C<br />
+                    <input type="checkbox" name="checkbox4" value="d" />D<br />
+                    <input type="checkbox" name="checkbox5" value="e" />E<br />
+                </div>
+            </div>
+            <div class="input-group">
+                <h2>advanced.person</h2>
+                <div data-chum-prop="person" data-chum-type="complex">
+                    <label>First Name:</label><br />
+                    <input type="text" name="firstname" value="" placeholder="Enter your first name"/><br />
+                    <label>Last Name:</label><br />
+                    <input type="text" name="lastname" value="" placeholder="Enter your last name" /><br />
+                </div>
+            </div>
         </div>
+        <p>Scripts with all the custom bindings are after this paragraph.</p>
         <script>
-            chum.registerType('multiple', function ($elem, change) {
-                return {
+            var MultiSelectAccessor = function ($elem, change) {
+                var accessor = {
                     get: function () {
+                        // Find all the checkboxes within the div, and concat the values!
                         var checkboxes = $elem.find('[type="checkbox"]:checked');
                         var raw = _.map(checkboxes, function (checkbox) {
                             return $(checkbox).val();
@@ -29,7 +51,7 @@
                     },
                     set: function (val) {
                         var before, after;
-                        if (_.isFunction(change)) { before = this.get(); }
+                        if (_.isFunction(change)) { before = accessor.get(); }
 
                         var raw = val.split(',');
                         var checkboxes = $elem.find('[type="checkbox"]');
@@ -43,12 +65,48 @@
                         })
 
                         if (_.isFunction(change)) {
-                            after = this.get();
+                            after = accessor.get();
                             change(before, after);
                         }
                     }
                 }
-            })
+                return accessor;
+            }
+            chum.registerType('multiple', MultiSelectAccessor);
+
+            var ComplexAccessor = function ($elem, change) {
+                var $firstname = $elem.find('input[name="firstname"]');
+                var $lastname = $elem.find('input[name="lastname"]');
+                var accessor = {
+                    get: function () {
+                        // Put all the inputs together and return an object
+                        var result = {
+                            firstname: $firstname.val(),
+                            lastname: $lastname.val()
+                        }
+                        return result;
+                    },
+                    set: function (val) {
+                        var before, after;
+                        if (_.isFunction(change)) { before = accessor.get(); }
+
+                        // only sets firstname and lastname if value has those.
+                        if (val.firstname) {
+                            $firstname.val(val.firstname);
+                        }
+                        if (val.lastname) {
+                            $lastname.val(val.lastname);
+                        }
+
+                        if (_.isFunction(change)) {
+                            after = accessor.get();
+                            change(before, after);
+                        }
+                    }
+                }
+                return accessor;
+            }
+            chum.registerType('complex', ComplexAccessor);
         </script>
     </body>
 </html>
