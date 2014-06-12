@@ -132,6 +132,7 @@
         _.each(props, function (prop) {
             var $prop = $(prop);
             var propName = $prop.attr(selProp);
+            showDebug && console.log('-----', propName);
             propNames.push(propName);
             var accessors = null;
             if ($prop.is('[' + selType + ']')) {
@@ -139,7 +140,7 @@
                 var type = $prop.attr(selType);
                 if (!!customAccessors[type]) {
                     showDebug && console.log('createObject - custom, found');
-                    accessors = customAccessors[type]($prop, function (before, after) {
+                    accessors = new customAccessors[type]($prop, function (before, after) {
                         if (!!events['change'] && events['change'].length > 0) {
                             _.each(events['change'], function (callback) {
                                 callback(unit, propName, before, after);
