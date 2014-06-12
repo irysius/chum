@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Chum - Creating Custom Binding</title>
+        <script src="/js/lib/jquery-2.1.0.min.js"></script>
+        <script src="/js/lib/lodash.js"></script>
+        <script src="/js/chum.js"></script>
+    </head>
+    <body>
+        <div data-chum-prop="multiple" data-chum-type="multiple">
+            <label>Multiple Checkboxes:</label>
+            <input type="checkbox" name="checkbox1" value="a" />A<br />
+            <input type="checkbox" name="checkbox2" value="b" />B<br />
+            <input type="checkbox" name="checkbox3" value="c" />C<br />
+            <input type="checkbox" name="checkbox4" value="d" />D<br />
+            <input type="checkbox" name="checkbox5" value="e" />E<br />
+        </div>
+        <script>
+            chum.registerType('multiple', function ($elem, change) {
+                return {
+                    get: function () {
+                        var checkboxes = $elem.find('[type="checkbox"]:checked');
+                        var raw = _.map(checkboxes, function (checkbox) {
+                            return $(checkbox).val();
+                        })
+                        return raw.join(',');
+                    },
+                    set: function (val) {
+                        var before, after;
+                        if (_.isFunction(change)) { before = this.get(); }
+
+                        var raw = val.split(',');
+                        var checkboxes = $elem.find('[type="checkbox"]');
+                        _.each(checkboxes, function (checkbox) {
+                            var $checkbox = $(checkbox);
+                            if (raw.indexOf($checkbox.val()) != -1) {
+                                $checkbox[0].checked = true;
+                            } else {
+                                $checkbox[0].checked = false;
+                            }
+                        })
+
+                        if (_.isFunction(change)) {
+                            after = this.get();
+                            change(before, after);
+                        }
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

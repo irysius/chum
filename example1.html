@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Chum - Binding Basic Inputs</title>
+        <script src="/js/lib/jquery-2.1.0.min.js"></script>
+        <script src="/js/lib/lodash.js"></script>
+        <script src="/js/chum.js"></script>
+        <style>
+            h1 {
+                font-size: 18px;
+            }
+            h2 {
+                font-size: 14px;
+                font-weight: bold;
+            }
+            .input-group {
+                padding-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div>Inspect the html for more details.</div>
+        <p>You can press F12 and manipulate the object Chum parsed.</p>
+        <p>You can access the object via: chum.items.example</p>
+        <p>You can access/modify the radio buttons by getting/setting: chum.items.example.shapes</p>
+        <h1>chum.items.example</h1>
+        <div data-chum-obj="example">
+            <div class="input-group">
+                <h2>example.name</h2>
+                <label>input</label><br />
+                <input type="text" name="text" data-chum-prop="name"/>
+            </div>
+            <div class="input-group">
+                <h2>example.number</h2>
+                <label>input[type="number"]</label><br />
+                <input type="number" name="number" data-chum-prop="number"/>
+            </div>
+            <div class="input-group">
+                <h2>example.color</h2>
+                <label>select</label><br />
+                <select name="select" data-chum-prop="color">
+                    <option value="">Default</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                    <option value="orange">Orange</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <h2>example.boolean</h2>
+                <label>input[type="checkbox"]</label><br />
+                <input type="checkbox" name="checkbox" data-chum-prop="boolean"/>
+            </div>
+            <div class="input-group">
+                <h2>example.textarea</h2>
+                <label>textarea</label><br />
+                <textarea name="stuff" data-chum-prop="textarea"></textarea>
+            </div>
+            <div class="input-group">
+                <h2>example.shapes</h2>
+                <label>input[type="radio"]</label><br />
+                <input type="radio" name="shapes" value="circle" data-chum-prop="shapes"/>Circle<br />
+                <input type="radio" name="shapes" value="rectangle" />Rectangle<br />
+                <input type="radio" name="shapes" value="triangle" />Triangle<br />
+                <input type="radio" name="shapes" value="square" />Square<br />
+            </div>
+        </div>
+        
+    </body>
+</html>
