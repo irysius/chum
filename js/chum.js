@@ -229,7 +229,7 @@
             console.log(events[event]);
         }
 
-        unit.props = function () { return propNames };
+        unit.props = propNames;
 
         dictionary[name] = unit;
         return dictionary[name];
@@ -246,7 +246,6 @@
         })
         if (!!events['rescanned'] && events['rescanned'].length > 0) {
             _.each(events['rescanned'], function (callback) {
-                console.log(callback);
                 callback();
             })
         }
@@ -257,12 +256,10 @@
             events[event] = [];
         }
         events[event].push(callback);
-        console.log(events[event]);
     }
 
     function off(event, callback) {
         events[event] = _.remove(events[event], callback);
-        console.log(events[event]);
     }
 
     var chum = {

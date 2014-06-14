@@ -1,56 +1,93 @@
 describe('chum.malformed', function () {
-    var items = chum.items;
+    before(function (done) {
+        $(function () { done(); })
+    })
+
     describe('the control object', function () {
-        it('should exist on items', function () {
-            Should(items).have.property('control');
+        it('should exist on items', function (done) {
+            var items = chum.items;
+            items.should.have.property('control');
+            done();
         })
-        it('should have text property with value "control"', function () {
-            var control = items.control;
-            Should(control.text).equal('control');
+        it('should have text property with value "control"', function (done) {
+            var control = chum.items.control;
+            control.text.should.equal('control');
+            done();
         })
     })
     describe('object parsing', function () {
-        it('should not pick up null/empty names', function () {
-            Should(items).not.have.property('');
+        it('should not pick up null/empty names', function (done) {
+            var items = chum.items;
+            items.should.not.have.property('');
+            done();
         })
-        it('should not pick up loose properties', function () {
-            Should(items).not.have.property('text');
+        it('should not pick up loose properties', function (done) {
+            var items = chum.items;
+            items.should.not.have.property('text');
+            done();
         })
-        it('should pick up testA', function () {
-            Should(items).have.property('testA');
+        it('should pick up testA', function (done) {
+            var items = chum.items;
+            items.should.have.property('testA');
+            done();
         })
-        it('should pick up testB', function () {
-            Should(items).have.property('testB');
+        it('should pick up testB', function (done) {
+            var items = chum.items;
+            items.should.have.property('testB');
+            done();
         })
-        it('should pick up doodadA', function () {
-            Should(items).have.property('doodadA');
+        it('should pick up doodadA', function (done) {
+            var items = chum.items;
+            items.should.have.property('doodadA');
+            items.doodadA.should.have.property('shapes');
+            done();
         })
-        it('should pick up doodadB', function () {
-            Should(items).have.property('doodadB');
+        it('should pick up doodadB', function (done) {
+            var items = chum.items;
+            items.should.have.property('doodadB');
+            done();
         })
-        it('should pick up doodadC', function () {
-            Should(items).have.property('doodadC');
+        it('should pick up doodadC', function (done) {
+            var items = chum.items;
+            items.should.have.property('doodadC');
+            done();
         })
     })
     describe('testA', function () {
-        var testA = items.testA;
-        it('should not have nameless property', function () {
-            Should(testA).not.have.property('');
+        it('should fail to have any properties', function (done) {
+            var testA = chum.items.testA;
+            console.log(testA.props);
+            testA.props.length.should.equal(0);
+            done();
         })
     })
     describe('testB', function () {
-        var testB = items.testB;
-        it('should not have nameless property', function () {
-            Should(testB).not.have.property('');
+        it('should fail to have any properties', function (done) {
+            var testB = chum.items.testB;
+            testB.props.length.should.equal(0);
+            done();
         })
     })
     describe('doodadA', function () {
-        var items = chum.items;
-        var doodadA = items.doodadA;
-        console.log(items);
-        it('should only have a shapes property', function () {
-            Should(doodadA.props()).have.lengthOf(1);
-            Should(doodadA.props()[0]).be.equal.to('shapes');
+        it('should fail to have any properties', function (done) {
+            var doodadA = chum.items.doodadA;
+            doodadA.props.length.should.equal(0);
+            done();
+        })
+    })
+    describe('doodadB', function () {
+        it('should fail to have any properties', function (done) {
+            var doodadA = chum.items.doodadA;
+            doodadA.props.length.should.equal(0);
+            done();
+        })
+    })
+    describe('doodadC', function () {
+        it('should only have a shapes property', function (done) {
+            var doodadA = chum.items.doodadA;
+            doodadA.props.length.should.equal(1);
+            doodadA.should.have.property('shapes');
+            done();
         })
     })
 })
