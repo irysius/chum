@@ -16,38 +16,37 @@ describe('chum.malformed', function () {
         })
     })
     describe('object parsing', function () {
-        it('should not pick up null/empty names', function (done) {
+        it('should not parse null/empty names', function (done) {
             var items = chum.items;
             items.should.not.have.property('');
             done();
         })
-        it('should not pick up loose properties', function (done) {
+        it('should not parse loose properties', function (done) {
             var items = chum.items;
             items.should.not.have.property('text');
             done();
         })
-        it('should pick up testA', function (done) {
+        it('should parse testA', function (done) {
             var items = chum.items;
             items.should.have.property('testA');
             done();
         })
-        it('should pick up testB', function (done) {
+        it('should parse testB', function (done) {
             var items = chum.items;
             items.should.have.property('testB');
             done();
         })
-        it('should pick up doodadA', function (done) {
+        it('should parse doodadA', function (done) {
             var items = chum.items;
             items.should.have.property('doodadA');
-            items.doodadA.should.have.property('shapes');
             done();
         })
-        it('should pick up doodadB', function (done) {
+        it('should parse doodadB', function (done) {
             var items = chum.items;
             items.should.have.property('doodadB');
             done();
         })
-        it('should pick up doodadC', function (done) {
+        it('should parse doodadC', function (done) {
             var items = chum.items;
             items.should.have.property('doodadC');
             done();
@@ -56,7 +55,6 @@ describe('chum.malformed', function () {
     describe('testA', function () {
         it('should fail to have any properties', function (done) {
             var testA = chum.items.testA;
-            console.log(testA.props);
             testA.props.length.should.equal(0);
             done();
         })
@@ -77,16 +75,16 @@ describe('chum.malformed', function () {
     })
     describe('doodadB', function () {
         it('should fail to have any properties', function (done) {
-            var doodadA = chum.items.doodadA;
-            doodadA.props.length.should.equal(0);
+            var doodadB = chum.items.doodadB;
+            doodadB.props.length.should.equal(0);
             done();
         })
     })
     describe('doodadC', function () {
         it('should only have a shapes property', function (done) {
-            var doodadA = chum.items.doodadA;
-            doodadA.props.length.should.equal(1);
-            doodadA.should.have.property('shapes');
+            var doodadC = chum.items.doodadC;
+            doodadC.props.length.should.equal(1);
+            doodadC.should.have.property('shapes');
             done();
         })
     })

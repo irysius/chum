@@ -9,6 +9,7 @@
     var dictionary = {};
     var events = {};
     var customAccessors = {};
+    var radioNames = []; // Limit one property ever on grouped radios.
 
     function getBasic($elem) {
         return $elem.val();
@@ -124,19 +125,32 @@
 
     function createObject($unit) {
         var name = $unit.attr(selObject);
+        if (!name) { return null; }
         showDebug && console.log('---', name);
         var unit = {};
         var events = {};
-        var props = $unit.find('[' + selProp + ']');
-        showDebug && console.log('properties found:', props.length);
         var propNames = [];
-
+        var props = $unit.find('[' + selProp + ']');
         _.each(props, function (prop) {
             var $prop = $(prop);
             var propName = $prop.attr(selProp);
-            showDebug && console.log('------', propName);
-            propNames.push(propName);
+            if (!!propName) {
+                if (!_.contains(propNames, propName)) {
+                    propNames.push(propName);
+                } else {
+                    showDebug && console.log(name, "'s", propName, 'violated uniqueness constraint');
+                    propNames = _.remove(propNames, propName);
+                }
+            }
+        })
+
+
+        showDebug && console.log('properties found:', propNames.length);
+
+        _.each(propNames, function (propName) {
+            var $prop = $unit.find('[' + selProp + '="' + propName + '"]');
             var accessors = null;
+            var skip = false;
             if ($prop.is('[' + selType + ']')) {
                 showDebug && console.log('createObject - custom');
                 var type = $prop.attr(selType);
@@ -176,13 +190,32 @@
 
             if (!accessors && $prop.is('[type="radio"]')) {
                 showDebug && console.log('createObject - radio');
-                accessors = new RadioAccessor($prop, function (before, after) {
-                    if (!!events['change'] && events['change'].length > 0) {
-                        _.each(events['change'], function (callback) {
-                            callback(unit, propName, before, after);
-                        })
+                var radioName = $prop.attr('name');
+                var unique = true;
+                _.each(radioNames, function (item) {
+                    if (item.name == radioName) {
+                        item.duplicate = true;
+                        propNames = _.remove(propNames, propName);
+                        unique = false;
                     }
-                });
+                })
+                if (unique) {
+                    radioNames.push({
+                        name: radioName,
+                        prop: propName,
+                        container: name,
+                        duplicate: false
+                    });
+                    accessors = new RadioAccessor($prop, function (before, after) {
+                        if (!!events['change'] && events['change'].length > 0) {
+                            _.each(events['change'], function (callback) {
+                                callback(unit, propName, before, after);
+                            })
+                        }
+                    });
+                } else {
+                    skip = true;
+                }
             }
 
             if (!accessors) {
@@ -198,11 +231,13 @@
             }
 
             try {
-                Object.defineProperty(unit, propName,
+                if (!skip) {
+                    Object.defineProperty(unit, propName,
                     {
                         get: accessors.get,
                         set: accessors.set
                     });
+                }
             } catch (err) {
                 showDebug && console.log('Could not define property', propName, 'for', name);
             }
@@ -221,13 +256,20 @@
                 events[event] = [];
             }
             events[event].push(callback);
-            console.log(events[event]);
+            showDebug && console.log(events[event]);
         }
 
         unit.off = function (event, callback) {
             events[event] = _.remove(events[event], callback);
-            console.log(events[event]);
+            showDebug && console.log(events[event]);
         }
+
+        _.each(radioNames, function (item) {
+            if (item.duplicate && item.container == name) {
+                propNames = _.remove(propNames, item.prop);
+                delete unit[item.prop];
+            }
+        })
 
         unit.props = propNames;
 
