@@ -5,8 +5,9 @@
     var selObject = 'data-chum-obj';
     var selProp = 'data-chum-prop';
     var selType = 'data-chum-type';
-    var showDebug = true;
+    var showDebug = false;
     var dictionary = {};
+    var events = {};
     var customAccessors = {};
 
     function getBasic($elem) {
@@ -123,6 +124,7 @@
 
     function createObject($unit) {
         var name = $unit.attr(selObject);
+        showDebug && console.log('---', name);
         var unit = {};
         var events = {};
         var props = $unit.find('[' + selProp + ']');
@@ -132,7 +134,7 @@
         _.each(props, function (prop) {
             var $prop = $(prop);
             var propName = $prop.attr(selProp);
-            showDebug && console.log('-----', propName);
+            showDebug && console.log('------', propName);
             propNames.push(propName);
             var accessors = null;
             if ($prop.is('[' + selType + ']')) {
@@ -195,11 +197,15 @@
                 });
             }
 
-            Object.defineProperty(unit, propName,
-                {
-                    get: accessors.get,
-                    set: accessors.set
-                });
+            try {
+                Object.defineProperty(unit, propName,
+                    {
+                        get: accessors.get,
+                        set: accessors.set
+                    });
+            } catch (err) {
+                showDebug && console.log('Could not define property', propName, 'for', name);
+            }
         })
 
         unit.serialize = function () {
@@ -223,6 +229,8 @@
             console.log(events[event]);
         }
 
+        unit.props = function () { return propNames };
+
         dictionary[name] = unit;
         return dictionary[name];
     }
@@ -236,12 +244,33 @@
         _.each(units, function (unit) {
             createObject($(unit));
         })
+        if (!!events['rescanned'] && events['rescanned'].length > 0) {
+            _.each(events['rescanned'], function (callback) {
+                console.log(callback);
+                callback();
+            })
+        }
+    }
+
+    function on(event, callback) {
+        if (!events[event] || !_.isArray(events[event])) {
+            events[event] = [];
+        }
+        events[event].push(callback);
+        console.log(events[event]);
+    }
+
+    function off(event, callback) {
+        events[event] = _.remove(events[event], callback);
+        console.log(events[event]);
     }
 
     var chum = {
         rescan: rescan,
         registerType: registerAccessor,
-        items: dictionary
+        items: dictionary,
+        on: on,
+        off: off
     }
 
     $(function () {
