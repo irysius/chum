@@ -69,6 +69,7 @@
         <script>mocha.setup('bdd')</script>
         <script src="js/duplicates.js"></script>
 		<script>
+			chum.settings.showDebug = true;
             $(function () {
                 var $fixture = $('.fixture');
                 $('#toggle').on('click', function () {

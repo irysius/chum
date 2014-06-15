@@ -2,10 +2,11 @@
 	var exports = definition();
 	window.chum = exports.chum;
 })(function () {
+	var version = '0.0.1';
 	var selObject = 'data-chum-obj';
 	var selProp = 'data-chum-prop';
 	var selType = 'data-chum-type';
-	var showDebug = true;
+	var showDebug = false;
 	// 0 - only warnings
 	// 1 - add informational
 	var debugLevel = 0;
@@ -42,10 +43,8 @@
 		return $elem[0].checked;
 	}
 	function setCheckbox($elem, checked) {
-		if (checked === true) {
-			$elem[0].checked = true;
-		} else if (checked === false) {
-			$elem[0].checked = false;
+		if (_.isBoolean(checked)) {
+			$elem[0].checked = checked;
 		}
 	}
 	function CheckboxAccessor($elem, change) {
@@ -355,11 +354,65 @@
 		})
 	}
 
+	var settings = {};
+
+	Object.defineProperty(settings, 'selObject',
+	{
+		get: function () { return selObject; },
+		set: function (val) {
+			if (_.isString(val)) {
+				selObject = val;
+			}
+		}
+	});
+	Object.defineProperty(settings, 'selProp',
+	{
+		get: function () { return selProp; },
+		set: function (val) {
+			if (_.isString(val)) {
+				selProp = val;
+			}
+		}
+	});
+	Object.defineProperty(settings, 'selType',
+	{
+		get: function () { return selType; },
+		set: function (val) {
+			if (_.isString(val)) {
+				selType = val;
+			}
+		}
+	});
+	Object.defineProperty(settings, 'showDebug',
+	{
+		get: function () { return showDebug; },
+		set: function (val) {
+			if (_.isBoolean(val)) {
+				showDebug = val;
+			}
+		}
+	});
+	Object.defineProperty(settings, 'debugLevel',
+	{
+		get: function () { return debugLevel; },
+		set: function (val) {
+			var _val = parseInt(val);
+			if (_.isNaN(_val)) { _val = 0; }
+			debugLevel = _val;
+		}
+	});
+
 	var chum = {
 		rescan: rescan,
 		registerType: registerAccessor,
-		items: dictionary
-	}
+		items: dictionary,
+		settings: settings
+	};
+
+	Object.defineProperty(chum, 'version',
+	{
+		get: function () { return version; }
+	})
 
 	$(function () {
 		chum.rescan();

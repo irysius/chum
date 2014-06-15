@@ -41,6 +41,7 @@
         <script>mocha.setup('tdd')</script>
         <script src="js/normal.js"></script>
         <script>
+			chum.settings.showDebug = true;
             $(function () {
                 var $fixture = $('.fixture');
                 $('#toggle').on('click', function () {
