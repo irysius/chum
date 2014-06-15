@@ -6,6 +6,8 @@ Chum has a hard dependency on jQuery and lodash/underscore.
 
 Chum relies on data attributes to make its magic work.
 
+Visit examples, download, view unit tests and roadmap [here](irysius.github.io/chum/)
+
 ## Quick Start
 
 Reference Chum and its dependencies on the top of your page:
