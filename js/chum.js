@@ -5,9 +5,11 @@
 	var selObject = 'data-chum-obj';
 	var selProp = 'data-chum-prop';
 	var selType = 'data-chum-type';
-	var showDebug = false;
+	var showDebug = true;
+	// 0 - only warnings
+	// 1 - add informational
+	var debugLevel = 0;
 	var dictionary = {};
-	var events = {};
 	var customAccessors = {};
 	var radioNames = []; // Limit one property ever on grouped radios.
 
@@ -40,7 +42,11 @@
 		return $elem[0].checked;
 	}
 	function setCheckbox($elem, checked) {
-		$elem[0].checked = checked;
+		if (checked === true) {
+			$elem[0].checked = true;
+		} else if (checked === false) {
+			$elem[0].checked = false;
+		}
 	}
 	function CheckboxAccessor($elem, change) {
 		var accessor = {
@@ -89,7 +95,9 @@
 	}
 	function getRadio($elem) {
 		var name = $elem.attr('name');
-		return $('input[type="radio"][name="' + name + '"]:checked').val();
+		var val = $('input[type="radio"][name="' + name + '"]:checked').val();
+		if (_.isUndefined(val)) { val = null; }
+		return val;
 	}
 	function setRadio($elem, val) {
 		var name = $elem.attr('name');
@@ -122,27 +130,54 @@
 		}
 		return accessor;
 	}
+	function getRange($elem) {
+		return parseInt($elem.val());
+	}
+	function setRange($elem, val) {
+		$elem.val(val);
+	}
+	function RangeAccessor($elem, change) {
+		var accessor = {
+			get: function () {
+				return getRange($elem);
+			},
+			set: function (val) {
+				var before, after;
+				if (_.isFunction(change)) { before = accessor.get(); }
+
+				setRange($elem, val);
+
+				if (_.isFunction(change)) {
+					after = accessor.get();
+					change(before, after);
+				}
+			}
+		}
+		return accessor;
+	}
 
 	function createObject($unit) {
 		var name = $unit.attr(selObject);
 		if (!name) { return null; }
-		showDebug && console.log('---', name);
+		showDebug && debugLevel > 0 && console.log('---', name);
 		var unit = {};
 		var events = {};
 		var propNames = [];
 		var propNameViolations = [];
 		var props = $unit.find('[' + selProp + ']');
+
 		_.each(props, function (prop) {
 			var $prop = $(prop);
-			var propName = $prop.attr(selProp);
-			if (!!propName) {
-				console.log(propNames);
-				if (!_.contains(propNames, propName)) {
-					propNames.push(propName);
-				} else {
-					console.log(name + "'s", propName, 'violated uniqueness constraint');
-					if (!_.contains(propNameViolations, propName)) {
-						propNameViolations.push(propName);
+			if ($prop.closest('[' + selObject + ']')[0] == $unit[0]) {
+				var propName = $prop.attr(selProp);
+				if (!!propName) {
+					if (!_.contains(propNames, propName)) {
+						propNames.push(propName);
+					} else {
+						showDebug && console.log(name + "'s", propName, 'violated uniqueness constraint');
+						if (!_.contains(propNameViolations, propName)) {
+							propNameViolations.push(propName);
+						}
 					}
 				}
 			}
@@ -153,7 +188,7 @@
 		})
 
 
-		showDebug && console.log('properties found:', propNames.length);
+		showDebug && debugLevel > 0 && console.log('properties found:', propNames.length);
 
 		_.each(propNames, function (propName) {
 			var $prop = $unit.find('[' + selProp + '="' + propName + '"]');
@@ -161,10 +196,10 @@
 			var skip = false;
 
 			if ($prop.is('[' + selType + ']')) {
-				showDebug && console.log('createObject - custom');
+				showDebug && debugLevel > 0 && console.log('createObject - custom');
 				var type = $prop.attr(selType);
 				if (!!customAccessors[type]) {
-					showDebug && console.log('createObject - custom, found');
+					showDebug && debugLevel > 0 && console.log('createObject - custom, found');
 					accessors = new customAccessors[type]($prop, function (before, after) {
 						if (!!events['change'] && events['change'].length > 0) {
 							_.each(events['change'], function (callback) {
@@ -176,7 +211,7 @@
 			}
 
 			if (!accessors && $prop.is('[type="checkbox"]')) {
-				showDebug && console.log('createObject - checkbox');
+				showDebug && debugLevel > 0 && console.log('createObject - checkbox');
 				accessors = new CheckboxAccessor($prop, function (before, after) {
 					if (!!events['change'] && events['change'].length > 0) {
 						_.each(events['change'], function (callback) {
@@ -187,7 +222,7 @@
 			}
 
 			if (!accessors && $prop.is('[type="number"]')) {
-				showDebug && console.log('createObject - number');
+				showDebug && debugLevel > 0 && console.log('createObject - number');
 				accessors = new NumberAccessor($prop, function (before, after) {
 					if (!!events['change'] && events['change'].length > 0) {
 						_.each(events['change'], function (callback) {
@@ -197,8 +232,19 @@
 				});
 			}
 
+			if (!accessors && $prop.is('[type="range"]')) {
+				showDebug && debugLevel > 0 && console.log('createObject - range');
+				accessors = new RangeAccessor($prop, function (before, after) {
+					if (!!events['change'] && events['change'].length > 0) {
+						_.each(events['change'], function (callback) {
+							callback(unit, propName, before, after);
+						})
+					}
+				});
+			}
+
 			if (!accessors && $prop.is('[type="radio"]')) {
-				showDebug && console.log('createObject - radio');
+				showDebug && debugLevel > 0 && console.log('createObject - radio');
 				var radioName = $prop.attr('name');
 				var unique = true;
 				_.each(radioNames, function (item) {
@@ -228,11 +274,10 @@
 			}
 
 			if (!accessors) {
-				showDebug && console.log('createObject - default');
+				showDebug && debugLevel > 0 && console.log('createObject - default');
 				accessors = new BasicAccessor($prop, function (before, after) {
 					if (!!events['change'] && events['change'].length > 0) {
 						_.each(events['change'], function (callback) {
-							console.log(callback);
 							callback(unit, propName, before, after);
 						})
 					}
@@ -265,25 +310,35 @@
 				events[event] = [];
 			}
 			events[event].push(callback);
-			showDebug && console.log(events[event]);
+			showDebug && debugLevel > 0 && console.log(events[event]);
 		}
 
 		unit.off = function (event, callback) {
 			events[event] = _.remove(events[event], callback);
-			showDebug && console.log(events[event]);
+			showDebug && debugLevel > 0 && console.log(events[event]);
 		}
 
 		_.each(radioNames, function (item) {
 			if (item.duplicate && item.container == name) {
 				propNames = _.without(propNames, item.prop);
+				showDebug && console.log(name, 'tried to bind radio group', item.name, 'under different names');
 				delete unit[item.prop];
 			}
 		})
 
 		unit.props = propNames;
 
-		dictionary[name] = unit;
-		return dictionary[name];
+		if (!dictionary[name]) {
+			dictionary[name] = unit;
+		} else {
+			if (!_.isArray(dictionary[name])) {
+				var array = [];
+				array.push(dictionary[name]);
+				dictionary[name] = array;
+			}
+			dictionary[name].push(unit);
+		}
+		return unit;
 	}
 
 	function registerAccessor(typeName, accessor) {
@@ -293,32 +348,17 @@
 	function rescan() {
 		var units = $('[' + selObject + ']');
 		_.each(units, function (unit) {
-			createObject($(unit));
+			var $unit = $(unit);
+			if ($unit.parent().closest('[' + selObject + ']').length == 0) {
+				createObject($unit);
+			}
 		})
-		if (!!events['rescanned'] && events['rescanned'].length > 0) {
-			_.each(events['rescanned'], function (callback) {
-				callback();
-			})
-		}
-	}
-
-	function on(event, callback) {
-		if (!events[event] || !_.isArray(events[event])) {
-			events[event] = [];
-		}
-		events[event].push(callback);
-	}
-
-	function off(event, callback) {
-		events[event] = _.remove(events[event], callback);
 	}
 
 	var chum = {
 		rescan: rescan,
 		registerType: registerAccessor,
-		items: dictionary,
-		on: on,
-		off: off
+		items: dictionary
 	}
 
 	$(function () {

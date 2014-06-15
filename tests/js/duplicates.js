@@ -27,6 +27,7 @@ describe('chum.duplicates', function () {
 				var item1 = chum.items.item[0];
 				expect(item1).to.have.property('text');
 				expect(item1.text).to.equal('001');
+				done();
 			})
 			it('that is expected to be settable', function (done) {
 				var item1 = chum.items.item[0];
@@ -36,22 +37,25 @@ describe('chum.duplicates', function () {
 				var $item = $($('[data-chum-obj="item"]')[0]);
 				var $prop = $($item.find('[data-chum-prop="text"]')[0]);
 				expect($prop.val()).to.equal('101');
+				done();
 			})
 		})
 		describe('item2', function () {
 			it('is expected to have a property named boolean', function (done) {
 				var item2 = chum.items.item[1];
 				expect(item2).to.have.property('boolean');
-				expect(item2.boolean).to.equal(true);
+				expect(item2.boolean).to.be(true);
+				done();
 			})
 			it('that is expected to be settable', function (done) {
 				var item2 = chum.items.item[1];
 				item2.boolean = false;
-				expect(item2.boolean).to.equal(false);
+				expect(item2.boolean).to.be(false);
 
 				var $item = $($('[data-chum-obj="item"]')[1]);
 				var prop = $item.find('[data-chum-prop="boolean"]')[0];
-				expect(prop.checked).to.equal(false);
+				expect(prop.checked).to.be(false);
+				done();
 			})
 		})
 		describe('item3', function () {
@@ -59,15 +63,17 @@ describe('chum.duplicates', function () {
 				var item3 = chum.items.item[2];
 				expect(item3).to.have.property('text');
 				expect(item3.text).to.equal('002');
+				done();
 			})
 			it('that is expected to be settable', function (done) {
 				var item3 = chum.items.item[2];
 				item3.text = '102';
-				expect(item1.text).to.equal('102');
+				expect(item3.text).to.equal('102');
 
 				var $item = $($('[data-chum-obj="item"]')[2]);
 				var $prop = $($item.find('[data-chum-prop="text"]')[0]);
 				expect($prop.val()).to.equal('102');
+				done();
 			})
 		})
 	})

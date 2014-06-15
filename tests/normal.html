@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Chum Tests - Normal</title>
+		<link rel="stylesheet" href="/css/lib/mocha.css" />
+        <script src="/js/lib/jquery-2.1.0.min.js"></script>
+        <script src="/js/lib/lodash.js"></script>
+        <script src="/js/chum.js"></script>
+    </head>
+    <body>
+		<button id="toggle" type="button">Show Html</button>
+		<div class="fixture" style="display:none;">
+			<div data-chum-obj="item">
+				<input id="item-text" type="text" data-chum-prop="name"/>
+				<input id="item-number" type="number" data-chum-prop="number"/>
+				<select id="item-select" data-chum-prop="color">
+					<option value="">Default</option>
+					<option value="red">Red</option>
+					<option value="blue">Blue</option>
+					<option value="green">Green</option>
+					<option value="orange">Orange</option>
+				</select>
+				<input id="item-checkbox" type="checkbox" data-chum-prop="boolean"/>
+				<textarea id="item-textarea" data-chum-prop="textarea"></textarea>
+				<div>
+					<input class="item-radio" type="radio" name="shapes" value="circle" data-chum-prop="shapes"/>Circle<br />
+					<input class="item-radio" type="radio" name="shapes" value="rectangle" />Rectangle<br />
+					<input class="item-radio" type="radio" name="shapes" value="triangle" />Triangle<br />
+					<input class="item-radio" type="radio" name="shapes" value="square" />Square<br />
+				</div>
+                <input id="item-color" type="color" data-chum-prop="background"/>
+                <input id="item-range" type="range" data-chum-prop="range"/>
+			</div>
+		</div>
+		<div id="mocha"></div>
+        <script src="/js/lib/chai.js"></script>
+        <script>var assert = chai.assert;</script>
+        <script src="/js/lib/mocha.js"></script>
+        <script>mocha.setup('tdd')</script>
+        <script src="js/normal.js"></script>
+        <script>
+            $(function () {
+                var $fixture = $('.fixture');
+                $('#toggle').on('click', function () {
+                    var $self = $(this);
+                    if ($fixture.is(':visible')) {
+                        $fixture.hide();
+                        $self.text('Show Html');
+                    } else {
+                        $fixture.show();
+                        $self.text('Hide Html');
+                    }
+                })
+                mocha.checkLeaks();
+                mocha.run();
+            });
+        </script>
+    </body>
+</html>
