@@ -15,6 +15,7 @@
 			<li><a href="nesting.html">Nesting tests</a></li>
 			<li><a href="malformed.html">Malformed markup tests</a></li>
 			<li><a href="duplicates.html">Duplicate naming tests</a></li>
+			<li><a href="issues.html">Outstanding issues</a></li>
 		</ul>
 		<button id="toggle" type="button">Show Html</button>
 		<div class="fixture" style="display:none;">
@@ -48,21 +49,22 @@
         <script src="js/normal.js"></script>
         <script>
 			chum.settings.showDebug = true;
-            $(function () {
-                var $fixture = $('.fixture');
-                $('#toggle').on('click', function () {
-                    var $self = $(this);
-                    if ($fixture.is(':visible')) {
-                        $fixture.hide();
-                        $self.text('Show Html');
-                    } else {
-                        $fixture.show();
-                        $self.text('Hide Html');
-                    }
-                })
-                mocha.checkLeaks();
-                mocha.run();
-            });
+			chum.settings.debugLevel = 1;
+			$(function () {
+				var $fixture = $('.fixture');
+				$('#toggle').on('click', function () {
+					var $self = $(this);
+					if ($fixture.is(':visible')) {
+						$fixture.hide();
+						$self.text('Show Html');
+					} else {
+						$fixture.show();
+						$self.text('Hide Html');
+					}
+				})
+				mocha.checkLeaks();
+				mocha.run();
+			});
         </script>
     </body>
 </html>

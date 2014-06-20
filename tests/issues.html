@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Chum Tests - Issues</title>
+		<link rel="stylesheet" href="css/lib/mocha.css" />
+		<script src="../js/lib/jquery-2.1.0.min.js"></script>
+        <script src="../js/lib/lodash.js"></script>
+        <script src="../js/chum.js"></script>
+    </head>
+    <body>
+		<ul>
+			<li><a href="normal.html">Normal tests</a></li>
+			<li><a href="nesting.html">Nesting tests</a></li>
+			<li><a href="malformed.html">Malformed markup tests</a></li>
+			<li><a href="duplicates.html">Duplicate naming tests</a></li>
+			<li><a href="issues.html">Outstanding issues</a></li>
+		</ul>
+		<button id="toggle" type="button">Show Html</button>
+        <div class="fixture" style="display:none;">
+			<div data-chum-obj="item">
+				<input type="text" value="100" data-chum-prop="text" />
+			</div>
+		</div>
+
+        <div id="mocha"></div>
+        <script src="js/lib/expect.js"></script>
+        <script src="js/lib/mocha.js"></script>
+        <script>mocha.setup('bdd')</script>
+        <script src="js/issues.js"></script>
+		<script>
+			chum.settings.showDebug = true;
+            $(function () {
+                var $fixture = $('.fixture');
+                $('#toggle').on('click', function () {
+                    var $self = $(this);
+                    if ($fixture.is(':visible')) {
+                        $fixture.hide();
+                        $self.text('Show Html');
+                    } else {
+                        $fixture.show();
+                        $self.text('Hide Html');
+                    }
+                })
+            });
+            mocha.checkLeaks();
+            mocha.run();
+        </script>
+    </body>
+</html>
