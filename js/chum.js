@@ -5,6 +5,7 @@
 	var version = '0.1.1';
 	var selObject = 'data-chum-obj';
 	var selProp = 'data-chum-prop';
+	var selArray = 'data-chum-arr';
 	var selType = 'data-chum-type';
 	var showDebug = false;
 	// 0 - only warnings
@@ -166,6 +167,56 @@
 		showDebug && debugLevel > 0 && console.log('---', name);
 		var unit = {};
 		var events = {};
+		var arrays = $unit.find('[' + selArray + ']');
+
+		var propNames = createObjectProperties($unit, unit, events);
+
+		unit.serialize = function () {
+			var data = {};
+			_.each(propNames, function (propName) {
+				data[propName] = unit[propName];
+			})
+			return data;
+		}
+
+		unit.on = function (event, callback) {
+			if (!events[event] || !_.isArray(events[event])) {
+				events[event] = [];
+			}
+			events[event].push(callback);
+			showDebug && debugLevel > 0 && console.log(events[event]);
+		}
+
+		unit.off = function (event, callback) {
+			events[event] = _.remove(events[event], callback);
+			showDebug && debugLevel > 0 && console.log(events[event]);
+		}
+
+		_.each(radioNames, function (item) {
+			if (item.duplicate && item.container == name) {
+				propNames = _.without(propNames, item.prop);
+				showDebug && console.log(name, 'tried to bind radio group', item.name, 'under different names');
+				delete unit[item.prop];
+			}
+		})
+
+		unit.props = propNames;
+
+		if (!dictionary[name]) {
+			dictionary[name] = unit;
+		} else {
+			if (!_.isArray(dictionary[name])) {
+				var array = [];
+				array.push(dictionary[name]);
+				dictionary[name] = array;
+			}
+			dictionary[name].push(unit);
+		}
+		return unit;
+	}
+
+	function createObjectProperties($unit, unit, events) {
+		var name = $unit.attr(selObject);
 		var propNames = [];
 		var propNameViolations = [];
 		var props = $unit.find('[' + selProp + ']');
@@ -301,49 +352,9 @@
 			}
 		})
 
-		unit.serialize = function () {
-			var data = {};
-			_.each(propNames, function (propName) {
-				data[propName] = unit[propName];
-			})
-			return data;
-		}
-
-		unit.on = function (event, callback) {
-			if (!events[event] || !_.isArray(events[event])) {
-				events[event] = [];
-			}
-			events[event].push(callback);
-			showDebug && debugLevel > 0 && console.log(events[event]);
-		}
-
-		unit.off = function (event, callback) {
-			events[event] = _.remove(events[event], callback);
-			showDebug && debugLevel > 0 && console.log(events[event]);
-		}
-
-		_.each(radioNames, function (item) {
-			if (item.duplicate && item.container == name) {
-				propNames = _.without(propNames, item.prop);
-				showDebug && console.log(name, 'tried to bind radio group', item.name, 'under different names');
-				delete unit[item.prop];
-			}
-		})
-
-		unit.props = propNames;
-
-		if (!dictionary[name]) {
-			dictionary[name] = unit;
-		} else {
-			if (!_.isArray(dictionary[name])) {
-				var array = [];
-				array.push(dictionary[name]);
-				dictionary[name] = array;
-			}
-			dictionary[name].push(unit);
-		}
-		return unit;
+		return propNames;
 	}
+
 
 	function registerAccessor(typeName, accessor) {
 		customAccessors[typeName] = accessor;
@@ -357,7 +368,6 @@
 				createObject($unit);
 			}
 		})
-		console.log(dictionary);
 	}
 
 	var settings = {};
@@ -416,9 +426,9 @@
 		registerType: registerAccessor,
 		settings: settings
 	};
-	Object.defineProperty(chum, 'items', 
+	Object.defineProperty(chum, 'items',
 	{
-		get: function () { return dictionary; }	
+		get: function () { return dictionary; }
 	})
 	Object.defineProperty(chum, 'version',
 	{
@@ -426,6 +436,9 @@
 	})
 
 	$(function () {
+		if (!window.console) {
+			showDebug = false;
+		}
 		chum.rescan();
 	})
 
