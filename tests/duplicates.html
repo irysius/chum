@@ -69,6 +69,60 @@
 				<input type="checkbox" data-chum-prop="boolean" />
 				<input type="text" data-chum-prop="boolean" value="009"/>
 			</div>
+
+			<!-- Array properties -->
+			<div data-chum-obj="thingA" style="margin-bottom: 10px;">
+				<input type="text" data-chum-arr="friends" value="friendOne"/>
+				<input type="text" data-chum-arr="friends" value="friendTwo"/>
+				<input type="text" data-chum-arr="friends" value="friendThree"/>
+				<input type="text" data-chum-arr="friends" value="friendFour"/>
+				<input type="text" data-chum-arr="enemies" value="enemyOne"/>
+				<input type="text" data-chum-arr="enemies" value="enemyTwo"/>
+				<input type="text" data-chum-arr="enemies" value="enemyThree"/>
+				<input type="text" data-chum-arr="enemies" value="enemyFour"/>
+			</div>
+			<div data-chum-obj="thingB" style="margin-bottom: 10px;">
+				<input type="text" data-chum-arr="friends" value="friendOne"/>
+				<input type="text" data-chum-arr="friends" value="friendTwo"/>
+				<input type="text" data-chum-arr="friends" value="friendThree"/>
+				<input type="checkbox" data-chum-prop="boolean" checked />
+				<input type="text" data-chum-prop="firstname" value="test"/>
+			</div>
+			<div data-chum-obj="thingC" style="margin-bottom: 10px;">
+				<input type="text" data-chum-arr="friends" value="friendOne"/>
+				<input type="text" data-chum-arr="friends" value="friendTwo"/>
+				<input type="text" data-chum-arr="friends" value="friendThree"/>
+				<input type="checkbox" data-chum-prop="friends" checked />
+				<input type="text" data-chum-prop="firstname" value="test"/>
+			</div>
+			<div data-chum-obj="thingD" style="margin-bottom: 10px;">
+				<input type="text" data-chum-arr="things" value="friendOne"/>
+				<input type="number" data-chum-arr="things" value="100"/>
+				<select data-chum-arr="things">
+					<option value="objectOne">Object One</option>
+					<option value="objectTwo" selected>Object Two</option>
+					<option value="objectThree">Object Three</option>
+					<option value="objectFour">Object Four</option>
+				</select>
+			</div>
+			<div data-chum-obj="thingE" style="margin-bottom: 10px;">
+				<input type="text" data-chum-arr="things" value="friendOne"/>
+				<input type="number" data-chum-arr="things" value="100"/>
+				<input type="checkbox" data-chum-arr="things" checked/>
+				<textarea id="item-textarea" data-chum-arr="things">Random text</textarea>
+				<select data-chum-arr="things">
+					<option value="objectOne">Object One</option>
+					<option value="objectTwo" selected>Object Two</option>
+					<option value="objectThree">Object Three</option>
+					<option value="objectFour">Object Four</option>
+				</select>
+				<div>
+					<input class="item-radio" type="radio" name="shapes" value="circle" data-chum-arr="things"/>Circle<br />
+					<input class="item-radio" type="radio" name="shapes" value="rectangle" />Rectangle<br />
+					<input class="item-radio" type="radio" name="shapes" value="triangle" />Triangle<br />
+					<input class="item-radio" type="radio" name="shapes" value="square" checked />Square<br />
+				</div>
+			</div>
 		</div>
 		<div id="mocha"></div>
         <script src="js/lib/expect.js"></script>

@@ -110,4 +110,59 @@ describe('chum.duplicates', function () {
 			})
 		})
 	})
+
+	describe('array properties', function () {
+		it('is expected to be an array', function (done) {
+			var thingA = chum.items.thingA;
+			expect(thingA.friends).to.be.an.Array;
+			expect(thingA.friends.length).to.be(4);
+			expect(thingA.friends[3]).to.equal('friendFour');
+			expect(thingA.enemies).to.be.an.Array;
+			expect(thingA.enemies.length).to.be(4);
+			expect(thingA.enemies[2]).to.equal('enemyThree');
+			done();
+		})
+		it('is expected to work along side normal properties', function (done) {
+			var thingB = chum.items.thingB;
+			expect(thingB.boolean).to.be(true);
+			expect(thingB.firstname).to.equal('test');
+			expect(thingB.friends[2]).to.equal('friendThree');
+			done();
+		})
+		it('is expected to fail to parse if it conflicts with regular properties', function (done) {
+			var thingC = chum.items.thingC;
+			expect(thingC).to.not.have.property('friends');
+			expect(thingC.firstname).to.equal('test');
+			done();
+		})
+		it('is expected to group together properties of different types', function (done) {
+			var thingD = chum.items.thingD;
+			expect(thingD.things[0]).to.equal('friendOne');
+			expect(thingD.things[1]).to.be(100);
+			expect(thingD.things[2]).to.equal('objectTwo');
+			done();
+		})
+		it('is expected to be settable, like normal properties', function (done) {
+			var thingE = chum.items.thingE;
+			expect(thingE.things[0]).to.equal('friendOne');
+			expect(thingE.things[1]).to.be(100);
+			expect(thingE.things[2]).to.be(true);
+			expect(thingE.things[3]).to.equal('Random text');
+			expect(thingE.things[4]).to.equal('objectTwo');
+			expect(thingE.things[5]).to.equal('square');
+			thingE.things[0] = 'enemyOne';
+			thingE.things[1] = 200;
+			thingE.things[2] = false;
+			thingE.things[3] = 'text Random';
+			thingE.things[4] = 'objectOne';
+			thingE.things[5] = 'circle';
+			expect($('#arr-text').val()).to.equal('enemyOne');
+			expect(parseFloat($('#arr-number').val())).to.be(100);
+			expect($('#arr-checkbox')[0].checked).to.be(false);
+			expect($('#arr-textarea').val()).to.be('text Random');
+			expect($('#arr-select').val()).to.be('objectOne');
+			expect($('.arr-radio:checked').val()).to.equal('circle');
+			done();
+		})
+	})
 })
