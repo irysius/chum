@@ -70,21 +70,22 @@
         <script src="js/malformed.js"></script>
         <script>
 			chum.settings.showDebug = true;
-            $(function () {
-                var $fixture = $('.fixture');
-                $('#toggle').on('click', function () {
-                    var $self = $(this);
-                    if ($fixture.is(':visible')) {
-                        $fixture.hide();
-                        $self.text('Show Html');
-                    } else {
-                        $fixture.show();
-                        $self.text('Hide Html');
-                    }
-                })
-                mocha.checkLeaks();
-                mocha.run();
-            });
+			chum.settings.debugLevel = 1;
+			$(function () {
+				var $fixture = $('.fixture');
+				$('#toggle').on('click', function () {
+					var $self = $(this);
+					if ($fixture.is(':visible')) {
+						$fixture.hide();
+						$self.text('Show Html');
+					} else {
+						$fixture.show();
+						$self.text('Hide Html');
+					}
+				})
+				mocha.checkLeaks();
+				mocha.run();
+			});
         </script>
     </body>
 </html>

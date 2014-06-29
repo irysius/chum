@@ -169,120 +169,31 @@
 		var events = {};
 		var arrays = $unit.find('[' + selArray + ']');
 
-		var propNames = findPropNames($unit, unit, events);
-		var arrayNames = findArrayNames($unit, unit, events);
+		var propNames = findPropNames($unit);
+		var arrayNames = findArrayNames($unit);
 		var commonNames = _.intersection(propNames, arrayNames);
 		_.each(commonNames, function (commonName) {
 			propNames = _.without(propNames, commonName);
 			arrayNames = _.without(arrayNames, commonName);
 			showDebug && console.log(name + "'s", commonName, 'violated uniqueness constraint');
 		})
-		console.log(name);
-		console.log(propNames);
+
 		_.each(propNames, function (propName) {
-			var $prop = $unit.find('[' + selProp + '="' + propName + '"]');
-			var accessors = null;
-			var skip = false;
-
-			if ($prop.is('[' + selType + ']')) {
-				showDebug && debugLevel > 0 && console.log('createObject - custom');
-				var type = $prop.attr(selType);
-				if (!!customAccessors[type]) {
-					showDebug && debugLevel > 0 && console.log('createObject - custom, found');
-					accessors = new customAccessors[type]($prop, function (before, after) {
-						if (!!events['change'] && events['change'].length > 0) {
-							_.each(events['change'], function (callback) {
-								callback(unit, propName, before, after);
-							})
-						}
-					});
-				}
-			}
-
-			if (!accessors && $prop.is('[type="checkbox"]')) {
-				showDebug && debugLevel > 0 && console.log('createObject - checkbox');
-				accessors = new CheckboxAccessor($prop, function (before, after) {
-					if (!!events['change'] && events['change'].length > 0) {
-						_.each(events['change'], function (callback) {
-							callback(unit, propName, before, after);
-						})
-					}
-				});
-			}
-
-			if (!accessors && $prop.is('[type="number"]')) {
-				showDebug && debugLevel > 0 && console.log('createObject - number');
-				accessors = new NumberAccessor($prop, function (before, after) {
-					if (!!events['change'] && events['change'].length > 0) {
-						_.each(events['change'], function (callback) {
-							callback(unit, propName, before, after);
-						})
-					}
-				});
-			}
-
-			if (!accessors && $prop.is('[type="range"]')) {
-				showDebug && debugLevel > 0 && console.log('createObject - range');
-				accessors = new RangeAccessor($prop, function (before, after) {
-					if (!!events['change'] && events['change'].length > 0) {
-						_.each(events['change'], function (callback) {
-							callback(unit, propName, before, after);
-						})
-					}
-				});
-			}
-
-			if (!accessors && $prop.is('[type="radio"]')) {
-				showDebug && debugLevel > 0 && console.log('createObject - radio');
-				var radioName = $prop.attr('name');
-				var unique = true;
-				_.each(radioNames, function (item) {
-					if (item.name == radioName) {
-						item.duplicate = true;
-						propNames = _.without(propNames, propName);
-						unique = false;
-					}
-				})
-				if (unique) {
-					radioNames.push({
-						name: radioName,
-						prop: propName,
-						container: name,
-						duplicate: false
-					});
-					accessors = new RadioAccessor($prop, function (before, after) {
-						if (!!events['change'] && events['change'].length > 0) {
-							_.each(events['change'], function (callback) {
-								callback(unit, propName, before, after);
-							})
-						}
-					});
-				} else {
-					skip = true;
-				}
-			}
-
-			if (!accessors) {
-				showDebug && debugLevel > 0 && console.log('createObject - default');
-				accessors = new BasicAccessor($prop, function (before, after) {
-					if (!!events['change'] && events['change'].length > 0) {
-						_.each(events['change'], function (callback) {
-							callback(unit, propName, before, after);
-						})
-					}
-				});
-			}
-
-			try {
-				if (!skip) {
+			var result = createPropAccessor($unit, propName, propNames, unit, events);
+			propNames = result.propNames;
+			unit = result.unit;
+			events = result.events;
+			if (result.accessor) {
+				if (!unit[propName]) {
 					Object.defineProperty(unit, propName,
-                    {
-                    	get: accessors.get,
-                    	set: accessors.set
-                    });
-				}
-			} catch (err) {
+					{
+						configurable: true,
+						get: result.accessor.get,
+						set: result.accessor.set
+					});
+				} else { 
 				showDebug && console.log('Could not define property', propName, 'for', name);
+				}
 			}
 		})
 
@@ -330,7 +241,7 @@
 		return unit;
 	}
 
-	function findPropNames($unit, unit, events) {
+	function findPropNames($unit) {
 		var name = $unit.attr(selObject);
 		var propNames = [];
 		var propNameViolations = [];
@@ -362,7 +273,7 @@
 		return propNames;
 	}
 
-	function findArrayNames($unit, unit, events) {
+	function findArrayNames($unit) {
 		var name = $unit.attr(selArray);
 		var arrayNames = [];
 		var arrayNameViolations = [];
@@ -377,6 +288,117 @@
 		showDebug && debugLevel > 0 && console.log('arrays found:', arrayNames.length);
 
 		return arrayNames;
+	}
+
+	function createPropAccessor($unit, propName, propNames, unit, events) {
+		var name = $unit.attr(selObject);
+		var $prop = $unit.find('[' + selProp + '="' + propName + '"]');
+		var accessors = null;
+		var skip = false;
+
+		if ($prop.is('[' + selType + ']')) {
+			showDebug && debugLevel > 0 && console.log('createObject - custom');
+			var type = $prop.attr(selType);
+			if (!!customAccessors[type]) {
+				showDebug && debugLevel > 0 && console.log('createObject - custom, found');
+				accessors = new customAccessors[type]($prop, function (before, after) {
+					if (!!events['change'] && events['change'].length > 0) {
+						_.each(events['change'], function (callback) {
+							callback(unit, propName, before, after);
+						})
+					}
+				});
+			}
+		}
+
+		if (!accessors && $prop.is('[type="checkbox"]')) {
+			showDebug && debugLevel > 0 && console.log('createObject - checkbox');
+			accessors = new CheckboxAccessor($prop, function (before, after) {
+				if (!!events['change'] && events['change'].length > 0) {
+					_.each(events['change'], function (callback) {
+						callback(unit, propName, before, after);
+					})
+				}
+			});
+		}
+
+		if (!accessors && $prop.is('[type="number"]')) {
+			showDebug && debugLevel > 0 && console.log('createObject - number');
+			accessors = new NumberAccessor($prop, function (before, after) {
+				if (!!events['change'] && events['change'].length > 0) {
+					_.each(events['change'], function (callback) {
+						callback(unit, propName, before, after);
+					})
+				}
+			});
+		}
+
+		if (!accessors && $prop.is('[type="range"]')) {
+			showDebug && debugLevel > 0 && console.log('createObject - range');
+			accessors = new RangeAccessor($prop, function (before, after) {
+				if (!!events['change'] && events['change'].length > 0) {
+					_.each(events['change'], function (callback) {
+						callback(unit, propName, before, after);
+					})
+				}
+			});
+		}
+
+		if (!accessors && $prop.is('[type="radio"]')) {
+			showDebug && debugLevel > 0 && console.log('createObject - radio');
+			var radioName = $prop.attr('name');
+			var unique = true;
+			_.each(radioNames, function (item) {
+				if (item.name == radioName) {
+					item.duplicate = true;
+					propNames = _.without(propNames, propName);
+					unique = false;
+				}
+			})
+			if (unique) {
+				radioNames.push({
+					name: radioName,
+					prop: propName,
+					container: name,
+					duplicate: false
+				});
+				accessors = new RadioAccessor($prop, function (before, after) {
+					if (!!events['change'] && events['change'].length > 0) {
+						_.each(events['change'], function (callback) {
+							callback(unit, propName, before, after);
+						})
+					}
+				});
+			} else {
+				skip = true;
+			}
+		}
+
+		if (!accessors) {
+			showDebug && debugLevel > 0 && console.log('createObject - default');
+			accessors = new BasicAccessor($prop, function (before, after) {
+				if (!!events['change'] && events['change'].length > 0) {
+					_.each(events['change'], function (callback) {
+						callback(unit, propName, before, after);
+					})
+				}
+			});
+		}
+
+		if (!skip) {
+			return {
+				accessor: accessors,
+				propNames: propNames,
+				unit: unit,
+				events: events
+			};
+		} else {
+			return {
+				propNames: propNames,
+				unit: unit,
+				events: events
+			};
+		}
 	}
 
 	function registerAccessor(typeName, accessor) {
