@@ -27,6 +27,11 @@ If you have the following snippet in your html:
 			<input type="radio" name="gender" value="male" data-chum-prop="gender" checked />
 			<input type="radio" name="gender" value="female" />
 		</div>
+		<ul>
+			<li><input type="text" data-chum-arr="enemies" value="Colin" /></li>
+			<li><input type="text" data-chum-arr="enemies" value="Dun" /></li>
+			<li><input type="text" data-chum-arr="enemies" value="Posey" /></li>
+		</ul>
 	</div>
 
 Then when the DOM is loaded, or when you call `chum.rescan()`, the following object is available to you:
@@ -35,6 +40,9 @@ Then when the DOM is loaded, or when you call `chum.rescan()`, the following obj
 	console.log(x.name); // prints "Big Bad Wolf"
 	console.log(x.age); // prints 300
 	console.log(x.gender); // prints "male"
+
+	console.log(x.enemies); // returns an array-like object
+	console.log(x.enemies[2]); // prints "Posey"
 
 
 ## Chum Data Attributes
@@ -46,6 +54,10 @@ Tagged element represents a container whose properties can be found within as `d
 ### `data-chum-prop`
 
 Represents a property in an item.
+
+### `data-chum-arr`
+
+Represents a collection of properties in an item.
 
 ### `data-chum-type`
 
