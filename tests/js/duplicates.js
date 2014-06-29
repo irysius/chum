@@ -114,7 +114,8 @@ describe('chum.duplicates', function () {
 	describe('array properties', function () {
 		it('is expected to be an array', function (done) {
 			var thingA = chum.items.thingA;
-			expect(thingA.friends).to.be.an.Array;
+			// Cannot check for _.isArray unless we extend array in the code...
+			expect(thingA.friends).to.have.property('length');
 			expect(thingA.friends.length).to.be(4);
 			expect(thingA.friends[3]).to.equal('friendFour');
 			expect(thingA.enemies).to.be.an.Array;
@@ -157,7 +158,7 @@ describe('chum.duplicates', function () {
 			thingE.things[4] = 'objectOne';
 			thingE.things[5] = 'circle';
 			expect($('#arr-text').val()).to.equal('enemyOne');
-			expect(parseFloat($('#arr-number').val())).to.be(100);
+			expect(parseFloat($('#arr-number').val())).to.be(200);
 			expect($('#arr-checkbox')[0].checked).to.be(false);
 			expect($('#arr-textarea').val()).to.be('text Random');
 			expect($('#arr-select').val()).to.be('objectOne');

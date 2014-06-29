@@ -106,21 +106,21 @@
 				</select>
 			</div>
 			<div data-chum-obj="thingE" style="margin-bottom: 10px;">
-				<input type="text" data-chum-arr="things" value="friendOne"/>
-				<input type="number" data-chum-arr="things" value="100"/>
-				<input type="checkbox" data-chum-arr="things" checked/>
-				<textarea id="item-textarea" data-chum-arr="things">Random text</textarea>
-				<select data-chum-arr="things">
+				<input id="arr-text" type="text" data-chum-arr="things" value="friendOne"/>
+				<input id="arr-number" type="number" data-chum-arr="things" value="100"/>
+				<input id="arr-checkbox" type="checkbox" data-chum-arr="things" checked/>
+				<textarea id="arr-textarea" data-chum-arr="things">Random text</textarea>
+				<select id="arr-select" data-chum-arr="things">
 					<option value="objectOne">Object One</option>
 					<option value="objectTwo" selected>Object Two</option>
 					<option value="objectThree">Object Three</option>
 					<option value="objectFour">Object Four</option>
 				</select>
 				<div>
-					<input class="item-radio" type="radio" name="shapes" value="circle" data-chum-arr="things"/>Circle<br />
-					<input class="item-radio" type="radio" name="shapes" value="rectangle" />Rectangle<br />
-					<input class="item-radio" type="radio" name="shapes" value="triangle" />Triangle<br />
-					<input class="item-radio" type="radio" name="shapes" value="square" checked />Square<br />
+					<input type="radio" name="shapes" class="arr-radio" value="circle" data-chum-arr="things"/>Circle<br />
+					<input type="radio" name="shapes" class="arr-radio" value="rectangle" />Rectangle<br />
+					<input type="radio" name="shapes" class="arr-radio" value="triangle" />Triangle<br />
+					<input type="radio" name="shapes" class="arr-radio" value="square" checked />Square<br />
 				</div>
 			</div>
 		</div>
