@@ -169,82 +169,16 @@
 		var events = {};
 		var arrays = $unit.find('[' + selArray + ']');
 
-		var propNames = createObjectProperties($unit, unit, events);
-
-		unit.serialize = function () {
-			var data = {};
-			_.each(propNames, function (propName) {
-				data[propName] = unit[propName];
-			})
-			return data;
-		}
-
-		unit.on = function (event, callback) {
-			if (!events[event] || !_.isArray(events[event])) {
-				events[event] = [];
-			}
-			events[event].push(callback);
-			showDebug && debugLevel > 0 && console.log(events[event]);
-		}
-
-		unit.off = function (event, callback) {
-			events[event] = _.remove(events[event], callback);
-			showDebug && debugLevel > 0 && console.log(events[event]);
-		}
-
-		_.each(radioNames, function (item) {
-			if (item.duplicate && item.container == name) {
-				propNames = _.without(propNames, item.prop);
-				showDebug && console.log(name, 'tried to bind radio group', item.name, 'under different names');
-				delete unit[item.prop];
-			}
+		var propNames = findPropNames($unit, unit, events);
+		var arrayNames = findArrayNames($unit, unit, events);
+		var commonNames = _.intersection(propNames, arrayNames);
+		_.each(commonNames, function (commonName) {
+			propNames = _.without(propNames, commonName);
+			arrayNames = _.without(arrayNames, commonName);
+			showDebug && console.log(name + "'s", commonName, 'violated uniqueness constraint');
 		})
-
-		unit.props = propNames;
-
-		if (!dictionary[name]) {
-			dictionary[name] = unit;
-		} else {
-			if (!_.isArray(dictionary[name])) {
-				var array = [];
-				array.push(dictionary[name]);
-				dictionary[name] = array;
-			}
-			dictionary[name].push(unit);
-		}
-		return unit;
-	}
-
-	function createObjectProperties($unit, unit, events) {
-		var name = $unit.attr(selObject);
-		var propNames = [];
-		var propNameViolations = [];
-		var props = $unit.find('[' + selProp + ']');
-
-		_.each(props, function (prop) {
-			var $prop = $(prop);
-			if ($prop.closest('[' + selObject + ']')[0] == $unit[0]) {
-				var propName = $prop.attr(selProp);
-				if (!!propName) {
-					if (!_.contains(propNames, propName)) {
-						propNames.push(propName);
-					} else {
-						showDebug && console.log(name + "'s", propName, 'violated uniqueness constraint');
-						if (!_.contains(propNameViolations, propName)) {
-							propNameViolations.push(propName);
-						}
-					}
-				}
-			}
-		})
-
-		_.each(propNameViolations, function (violation) {
-			propNames = _.without(propNames, violation);
-		})
-
-
-		showDebug && debugLevel > 0 && console.log('properties found:', propNames.length);
-
+		console.log(name);
+		console.log(propNames);
 		_.each(propNames, function (propName) {
 			var $prop = $unit.find('[' + selProp + '="' + propName + '"]');
 			var accessors = null;
@@ -352,9 +286,98 @@
 			}
 		})
 
+		unit.serialize = function () {
+			var data = {};
+			_.each(propNames, function (propName) {
+				data[propName] = unit[propName];
+			})
+			return data;
+		}
+
+		unit.on = function (event, callback) {
+			if (!events[event] || !_.isArray(events[event])) {
+				events[event] = [];
+			}
+			events[event].push(callback);
+			showDebug && debugLevel > 0 && console.log(events[event]);
+		}
+
+		unit.off = function (event, callback) {
+			events[event] = _.remove(events[event], callback);
+			showDebug && debugLevel > 0 && console.log(events[event]);
+		}
+
+		_.each(radioNames, function (item) {
+			if (item.duplicate && item.container == name) {
+				propNames = _.without(propNames, item.prop);
+				showDebug && console.log(name, 'tried to bind radio group', item.name, 'under different names');
+				delete unit[item.prop];
+			}
+		})
+
+		unit.props = propNames;
+
+		if (!dictionary[name]) {
+			dictionary[name] = unit;
+		} else {
+			if (!_.isArray(dictionary[name])) {
+				var array = [];
+				array.push(dictionary[name]);
+				dictionary[name] = array;
+			}
+			dictionary[name].push(unit);
+		}
+		return unit;
+	}
+
+	function findPropNames($unit, unit, events) {
+		var name = $unit.attr(selObject);
+		var propNames = [];
+		var propNameViolations = [];
+		var props = $unit.find('[' + selProp + ']');
+
+		_.each(props, function (prop) {
+			var $prop = $(prop);
+			if ($prop.closest('[' + selObject + ']')[0] == $unit[0]) {
+				var propName = $prop.attr(selProp);
+				if (!!propName) {
+					if (!_.contains(propNames, propName)) {
+						propNames.push(propName);
+					} else {
+						showDebug && console.log(name + "'s", propName, 'violated uniqueness constraint');
+						if (!_.contains(propNameViolations, propName)) {
+							propNameViolations.push(propName);
+						}
+					}
+				}
+			}
+		})
+
+		_.each(propNameViolations, function (violation) {
+			propNames = _.without(propNames, violation);
+		})
+
+		showDebug && debugLevel > 0 && console.log('properties found:', propNames.length);
+
 		return propNames;
 	}
 
+	function findArrayNames($unit, unit, events) {
+		var name = $unit.attr(selArray);
+		var arrayNames = [];
+		var arrayNameViolations = [];
+		var arrays = $unit.find('[' + selArray + ']');
+
+		arrayNames = _.map(arrays, function (array) {
+			var $array = $(array);
+			return $array.attr(selArray);
+		})
+		arrayNames = _.uniq(arrayNames);
+
+		showDebug && debugLevel > 0 && console.log('arrays found:', arrayNames.length);
+
+		return arrayNames;
+	}
 
 	function registerAccessor(typeName, accessor) {
 		customAccessors[typeName] = accessor;
